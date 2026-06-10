@@ -1,0 +1,52 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const curtirBtns = document.querySelectorAll('.curtir-btn');
+
+    curtirBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const postId = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            const spanCurtidas = this.querySelector('.curtidas-count');
+
+            fetch('index.php?rota=curtir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'post_id=' + postId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.total !== undefined) {
+                    spanCurtidas.innerText = data.total;
+                    if (data.curtiu) {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill', 'text-red-500');
+                    } else {
+                        icon.classList.remove('bi-heart-fill', 'text-red-500');
+                        icon.classList.add('bi-heart');
+                    }
+                }
+            });
+        });
+    });
+
+    const seguirBtns = document.querySelectorAll('.seguir-btn');
+    seguirBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const usuarioId = this.getAttribute('data-id');
+            fetch('index.php?rota=seguir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'usuario_id=' + usuarioId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.seguindo) {
+                    btn.innerHTML = '<i class="bi bi-person-check-fill"></i> Seguindo';
+                } else {
+                    btn.innerHTML = '<i class="bi bi-person-plus"></i> Seguir';
+                }
+            });
+        });
+    });
+});

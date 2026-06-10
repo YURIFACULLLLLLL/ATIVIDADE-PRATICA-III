@@ -1,0 +1,25 @@
+<?php
+require_once 'models/curtida_model.php';
+require_once 'models/post_model.php';
+
+function processar_curtir_ajax() {
+    if (!isset($_SESSION['usuario_id'])) {
+        echo json_encode(['erro' => 'não autenticado']);
+        exit;
+    }
+    $post_id = $_POST['post_id'] ?? 0;
+    $usuario_id = $_SESSION['usuario_id'];
+    
+    if (post_verificar_curtida($post_id, $usuario_id)) {
+        post_remover_curtida($post_id, $usuario_id);
+        $curtiu = false;
+    } else {
+        post_adicionar_curtida($post_id, $usuario_id);
+        $curtiu = true;
+    }
+    
+    $total = curtida_contar_por_post($post_id);
+    echo json_encode(['curtiu' => $curtiu, 'total' => $total]);
+    exit;
+}
+?>
